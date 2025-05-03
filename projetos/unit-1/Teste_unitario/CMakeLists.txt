@@ -23,7 +23,7 @@ if (EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
 # ====================================================================================
-set(PICO_BOARD pico CACHE STRING "Board type")
+set(PICO_BOARD pico_w CACHE STRING "Board type")
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
@@ -37,6 +37,12 @@ pico_sdk_init()
 
 add_executable(Teste_unitario Teste_unitario.c )
 
+target_sources(Teste_unitario PRIVATE
+    Teste_unitario.c
+    inc/ssd1306_i2c.c
+    inc/Display_Oled.c
+)
+
 pico_set_program_name(Teste_unitario "Teste_unitario")
 pico_set_program_version(Teste_unitario "0.1")
 
@@ -46,12 +52,19 @@ pico_enable_stdio_usb(Teste_unitario 0)
 
 # Add the standard library to the build
 target_link_libraries(Teste_unitario
-        pico_stdlib)
+        pico_stdlib
+        hardware_adc
+        hardware_timer
+        hardware_i2c)
 
 # Add the standard include files to the build
 target_include_directories(Teste_unitario PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 )
+
+# Add any user requested libraries
+target_link_libraries(Teste_unitario 
+        )
 
 pico_add_extra_outputs(Teste_unitario)
 
